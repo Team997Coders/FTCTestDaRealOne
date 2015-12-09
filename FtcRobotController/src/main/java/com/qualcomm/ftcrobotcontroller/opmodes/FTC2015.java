@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by 997robotics1 on 12/1/2015.
@@ -17,9 +16,21 @@ public class FTC2015 extends OpMode {
 
     private DcMotor conveyorbelt;
 
-    public FTC2015 (){
+    private DcMotor leftmotor;
+    private DcMotor rightmotor;
 
+    //put minimum and max values for servo in variables
+    final static double DOOR_MIN_RANGE = 0.2;
+    final static double DOOR_MAX_RANGE = 0.9;
 
+    //declare the door position and door change variable
+    double doorPosition;
+    double doorChange = 0.7;
+
+    //declare the servo
+    private Servo doorservo;
+
+    public FTC2015() {
     }
 
         ///////////////////////////////////////
@@ -33,6 +44,13 @@ public class FTC2015 extends OpMode {
 
             //assign a value to the door position variable
             doorPosition = 0.2;
+
+            //Curse your sudden but inevitable betrayal!
+            leftmotor = hardwareMap.dcMotor.get("leftmotor");
+            rightmotor = hardwareMap.dcMotor.get("rightmotor");
+
+            //KIRITO <3
+            rightmotor.setDirection(DcMotor.Direction.REVERSE); //Sebastian totally did this
 
     }
 
@@ -54,14 +72,12 @@ public class FTC2015 extends OpMode {
 
             //if x button is pressed, make the door open
             if (gamepad1.x) {
-
                 doorPosition += doorChange;
             }
 
 
             //if y button is pressed, make the door close
             if (gamepad1.y) {
-
                 doorPosition -= doorChange;
             }
 
@@ -70,18 +86,22 @@ public class FTC2015 extends OpMode {
 
             //set the servo's position
             doorservo.setPosition(doorPosition);
+
+
+            //If your hand touches metal I swear by my pretty floral bonnet I will end you.
+            float rightstickx = gamepad1.right_stick_x;
+            float rightsticky = gamepad1.right_stick_y;
+
+            //Jump START!! #NerveGear
+            rightstickx = Range.clip(rightstickx,1,-1);
+            rightsticky = Range.clip(rightsticky,1,-1);
+
+            //Morbid and creepifying
+            leftmotor.setPower(rightstickx - rightsticky);
+            rightmotor.setPower(rightstickx + rightsticky);
+
+            telemetry.addData("01", "GoingOneDirectionThisAmount");
+            telemetry.addData("02", "GoingTheOppositeDirectionThisAmount");
+
         }
-
-
-    //put minimum and max values for servo in variables
-    final static double DOOR_MIN_RANGE = 0.2;
-    final static double DOOR_MAX_RANGE = 0.9;
-
-   //declare the door position and door change variable
-    double doorPosition;
-    double doorChange = 0.7;
-
-    //declare the servo
-    private Servo doorservo;
-
 }
